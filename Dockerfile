@@ -1,18 +1,21 @@
-# Usa l'immagine di base di n8n
-FROM n8nio/n8n:latest
-
-# Installa le dipendenze necessarie (se n8n non è installato correttamente)
-USER root
-RUN apk add --no-cache --update bash
+# Usa l'immagine base ufficiale di N8n
+FROM node:16-alpine
 
 # Imposta la directory di lavoro
-WORKDIR /data
+WORKDIR /app
 
-# Espone la porta 5678
+# Copia il file package.json (assicurati che il file esista e sia configurato correttamente)
+COPY package.json package-lock.json ./
+
+# Installa le dipendenze
+RUN npm install --production
+
+# Esponi la porta 5678 per l'app di N8n
 EXPOSE 5678
 
-# Aggiungi variabili di ambiente per evitare errori
+# Imposta le variabili di ambiente
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+ENV N8N_LOG_LEVEL=debug
 
-# Avvia il comando n8n
-CMD ["n8n"]
+# Comando per avviare N8n
+CMD ["npm", "run", "start"]

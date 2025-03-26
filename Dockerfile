@@ -1,21 +1,27 @@
-# Usa l'immagine base ufficiale di N8n
-FROM node:16-alpine
+# Usa l'immagine base ufficiale di Node.js (assicurati di usare una versione compatibile)
+FROM node:20-alpine
 
-# Imposta la directory di lavoro
+# Setta la directory di lavoro all'interno del container
 WORKDIR /app
 
-# Copia il file package.json (assicurati che il file esista e sia configurato correttamente)
-COPY package.json package-lock.json ./
+# Copia i file package.json e pnpm-lock.yaml per installare le dipendenze
+COPY package.json pnpm-lock.yaml ./
 
-# Installa le dipendenze
-RUN npm install --production
+# Installa pnpm e le dipendenze del progetto
+RUN npm install -g pnpm
+RUN pnpm install --prod
 
-# Esponi la porta 5678 per l'app di N8n
-EXPOSE 5678
+# Copia il resto dei file del progetto
+COPY . .
 
-# Imposta le variabili di ambiente
+# Setta variabili di ambiente necessarie
 ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
 ENV N8N_LOG_LEVEL=debug
+ENV N8N_HOST=0.0.0.0
+ENV N8N_PORT=5678
 
-# Comando per avviare N8n
-CMD ["npm", "run", "start"]
+# Esponi la porta per il servizio
+EXPOSE 5678
+
+# Imposta il comando per avviare il servizio N8n usando pnpm
+CMD ["pnpm", "start"]

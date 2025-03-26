@@ -1,10 +1,13 @@
 FROM n8nio/n8n:latest
 
-# Imposta il working directory
+# Imposta la directory di lavoro
 WORKDIR /data
 
 # Espone la porta di default di n8n
 EXPOSE 5678
 
-# Avvia N8n con meno processi per ridurre il consumo di risorse
-CMD ["n8n", "--tunnel"]
+# Forza i permessi per evitare errori
+ENV N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=false
+
+# Avvia N8n
+CMD ["n8n"]
